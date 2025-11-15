@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>健康测量结果 - 血压血脂血糖</title>
+  <!-- 引入外部资源 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bp: '#2563EB',     // 血压 - 蓝色
+            lipid: '#059669',  // 血脂 - 绿色
+            glucose: '#D97706',// 血糖 - 橙色
+            neutral: '#64748B',// 中性色
+            success: '#10B981',// 健康状态-正常
+            warning: '#F59E0B',// 健康状态-注意
+            danger: '#EF4444'  // 健康状态-异常
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+      .data-card-hover {
+        transition: all 0.3s ease;
+      }
+      .data-card-hover:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+      }
+      .pulse-animation {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.8;
+        }
+      }
+    }
+  </style>
+  
+  <style>
+    /* 基础样式 */
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: #F8FAFC;
+    }
+    
+    /* 平滑过渡效果 */
+    .transition-all {
+      transition-property: all;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 300ms;
+    }
+    
+    /* 数值变化动画 */
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-count {
+      animation: countUp 0.6s ease forwards;
+    }
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+  <!-- 主容器（正方形） -->
+  <div class="w-full max-w-md aspect-square bg-white rounded-3xl card-shadow overflow-hidden flex flex-col">
+    <!-- 顶部信息栏 -->
+    <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+      <div>
+        <h1 class="text-lg font-bold text-gray-800">健康测量结果</h1>
+        <p class="text-xs text-gray-500 mt-1" id="measure-time">2025年11月15日 14:42</p>
+      </div>
+      <div class="flex items-center space-x-1 bg-success/10 text-success px-2 py-1 rounded-full text-xs font-medium">
+        <i class="fa fa-check-circle"></i>
+        <span>整体正常</span>
+      </div>
+    </div>
+    
+    <!-- 主要数据展示区 -->
+    <div class="flex-1 p-4 grid grid-cols-1 gap-4 overflow-y-auto">
+      <!-- 血压卡片 -->
+      <div class="bg-white border border-bp/10 rounded-2xl p-4 card-shadow data-card-hover animate-count">
+        <div class="flex justify-between items-center mb-3">
+          <div class="flex items-center">
+            <div class="w-8 h-8 rounded-full bg-bp/10 flex items-center justify-center mr-2">
+              <i class="fa fa-tint text-bp"></i>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-800">血压 (BP)</h2>
+          </div>
+          <span class="px-2 py-1 bg-success/10 text-success text-xs rounded-full font-medium">正常</span>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-sm text-gray-500">收缩压 (高压)</p>
+            <div class="flex items-baseline mt-1">
+              <span class="text-4xl font-bold text-bp">126</span>
+              <span class="text-sm text-gray-500 ml-1">mmHg</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">参考范围: 90-139 mmHg</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">舒张压 (低压)</p>
+            <div class="flex items-baseline mt-1">
+              <span class="text-4xl font-bold text-bp">81</span>
+              <span class="text-sm text-gray-500 ml-1">mmHg</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">参考范围: 60-89 mmHg</p>
+          </div>
+        </div>
+        
+        <div class="mt-3 pt-3 border-t border-gray-100">
+          <p class="text-sm text-gray-500">心率</p>
+          <div class="flex items-baseline mt-1">
+            <span class="text-2xl font-bold text-bp">76</span>
+            <span class="text-sm text-gray-500 ml-1">次/分</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 血脂卡片 -->
+      <div class="bg-white border border-lipid/10 rounded-2xl p-4 card-shadow data-card-hover animate-count delay-100">
+        <div class="flex justify-between items-center mb-3">
+          <div class="flex items-center">
+            <div class="w-8 h-8 rounded-full bg-lipid/10 flex items-center justify-center mr-2">
+              <i class="fa fa-flask text-lipid"></i>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-800">血脂 (Lipid)</h2>
+          </div>
+          <span class="px-2 py-1 bg-success/10 text-success text-xs rounded-full font-medium">正常</span>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-sm text-gray-500">总胆固醇</p>
+            <div class="flex items-baseline mt-1">
+              <span class="text-4xl font-bold text-lipid">4.7</span>
+              <span class="text-sm text-gray-500 ml-1">mmol/L</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">参考范围: <5.2 mmol/L</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">甘油三酯</p>
+            <div class="flex items-baseline mt-1">
+              <span class="text-4xl font-bold text-lipid">1.5</span>
+              <span class="text-sm text-gray-500 ml-1">mmol/L</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">参考范围: <1.7 mmol/L</p>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-gray-100">
+          <div>
+            <p class="text-sm text-gray-500">高密度脂蛋白</p>
+            <div class="flex items-baseline mt-1">
+              <span class="text-2xl font-bold text-lipid">1.3</span>
+              <span class="text-sm text-gray-500 ml-1">mmol/L</span>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">低密度脂蛋白</p>
+            <div class="flex items-baseline mt-1">
+              <span class="text-2xl font-bold text-lipid">2.8</span>
+              <span class="text-sm text-gray-500 ml-1">mmol/L</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 血糖卡片 -->
+      <div class="bg-white border border-glucose/10 rounded-2xl p-4 card-shadow data-card-hover animate-count delay-200">
+        <div class="flex justify-between items-center mb-3">
+          <div class="flex items-center">
+            <div class="w-8 h-8 rounded-full bg-glucose/10 flex items-center justify-center mr-2">
+              <i class="fa fa-balance-scale text-glucose"></i>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-800">血糖 (Glucose)</h2>
+          </div>
+          <span class="px-2 py-1 bg-warning/10 text-warning text-xs rounded-full font-medium">注意</span>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-sm text-gray-500">空腹血糖</p>
+            <div class="flex items-baseline mt-1">
+              <span class="text-4xl font-bold text-glucose">5.6</span>
+              <span class="text-sm text-gray-500 ml-1">mmol/L</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">参考范围: 3.9-6.1 mmol/L</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">餐后2小时</p>
+            <div class="flex items-baseline mt-1">
+              <span class="text-4xl font-bold text-glucose">7.8</span>
+              <span class="text-sm text-gray-500 ml-1">mmol/L</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">参考范围: <7.8 mmol/L</p>
+          </div>
+        </div>
+        
+        <div class="mt-3 pt-3 border-t border-gray-100">
+          <div class="bg-warning/5 border border-warning/20 rounded-lg p-2">
+            <p class="text-xs text-warning flex items-start">
+              <i class="fa fa-exclamation-circle mt-0.5 mr-1"></i>
+              <span>餐后血糖接近临界值，建议控制碳水化合物摄入，增加运动。</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 底部操作栏 -->
+    <div class="p-4 border-t border-gray-100 bg-gray-50 flex justify-between">
+      <button class="flex items-center space-x-1 text-neutral hover:text-bp transition-colors">
+        <i class="fa fa-history"></i>
+        <span class="text-sm font-medium">历史记录</span>
+      </button>
+      <button class="bg-bp hover:bg-bp/90 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center space-x-1">
+        <i class="fa fa-share-alt"></i>
+        <span>分享报告</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // 更新测量时间为当前时间
+    function updateMeasureTime() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      
+      const timeString = `${year}年${month}月${day}日 ${hours}:${minutes}`;
+      document.getElementById('measure-time').textContent = timeString;
+    }
+    
+    // 初始化时间
+    updateMeasureTime();
+    
+    // 为数值添加计数动画效果
+    function animateValue(element, start, end, duration) {
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const value = Math.floor(progress * (end - start) + start);
+        element.textContent = value;
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+    
+    // 初始化数值动画
+    document.addEventListener('DOMContentLoaded', () => {
+      // 血压数值动画
+      animateValue(document.querySelector('.text-bp.text-4xl:nth-of-type(1)'), 90, 126, 1500);
+      animateValue(document.querySelector('.text-bp.text-4xl:nth-of-type(2)'), 60, 81, 1500);
+      animateValue(document.querySelector('.text-bp.text-2xl'), 60, 76, 1500);
+      
+      // 血脂数值动画
+      animateValue(document.querySelector('.text-lipid.text-4xl:nth-of-type(1)'), 3, 4.7, 1500, true);
+      animateValue(document.querySelector('.text-lipid.text-4xl:nth-of-type(2)'), 0.8, 1.5, 1500, true);
+      animateValue(document.querySelector('.text-lipid.text-2xl:nth-of-type(1)'), 0.9, 1.3, 1500, true);
+      animateValue(document.querySelector('.text-lipid.text-2xl:nth-of-type(2)'), 2, 2.8, 1500, true);
+      
+      // 血糖数值动画
+      animateValue(document.querySelector('.text-glucose.text-4xl:nth-of-type(1)'), 3.9, 5.6, 1500, true);
+      animateValue(document.querySelector('.text-glucose.text-4xl:nth-of-type(2)'), 5, 7.8, 1500, true);
+    });
+    
+    // 扩展数值动画函数，支持小数
+    function animateValue(element, start, end, duration, isDecimal = false) {
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        let value;
+        
+        if (isDecimal) {
+          value = (progress * (end - start) + start).toFixed(1);
+        } else {
+          value = Math.floor(progress * (end - start) + start);
+        }
+        
+        element.textContent = value;
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+  </script>
+</body>
+</html>
